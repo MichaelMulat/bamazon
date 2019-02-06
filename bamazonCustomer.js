@@ -11,7 +11,7 @@ var connection = mysql.createConnection({
     user: "root",
 
     // Your password
-    password: "",
+    password: "ambessa",
     database: "bamazon"
 });
 
@@ -67,8 +67,8 @@ var purchaseItem = function () {
                     
                     // If the stock quantity is less than the requested amount 
                     if (chosenItem.stock_quantity < parseInt(answer.quantity)) {
-                        console.log("Insufficient quantity!")
-                        connection.end();
+                        console.log("I dont think we have that many in stock!")
+                        buyAgain();
                     }
                     // Else update the value in the database
                     else {
@@ -86,9 +86,9 @@ var purchaseItem = function () {
                             ], function (err) {
                                 // Report that the sale hs been made
                                 console.log("Thank you for your purchase.")
-                                console.log("You will be charged a total of $" + (chosenItem.cost * parseInt(answer.quantity)) )
-
-                                connection.end();
+                                console.log("You will be charged a total of $" + (chosenItem.cost * parseInt(answer.quantity)))
+                                buyAgain();
+                                
                             }
                         );
                     }
@@ -97,4 +97,21 @@ var purchaseItem = function () {
         }
         )
 
+};
+
+function buyAgain(){
+    inquirer
+        .prompt({
+            name: "buy_again",
+            type: "confirm",
+            message: "Would you like to keep shopping"
+        }
+      ).then(function(answer){
+        if(answer.buy_again){
+            showProductList();
+        } else {
+            console.log("OK! Thanks for shopping with bamazon!")
+            connection.end();
+        }
+      })
 }
